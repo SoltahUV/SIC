@@ -2,8 +2,6 @@
 
 A lightweight, cross-platform desktop app for converting images between formats, built with Avalonia UI and .NET.
 
-![UI Screenshot](docs/screenshot.png)
-
 ## Features
 
 - **Batch & single-file conversion** — convert one image or an entire folder at once
