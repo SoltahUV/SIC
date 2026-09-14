@@ -1,0 +1,142 @@
+<Application xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:materialIcons="using:Material.Icons.Avalonia"
+             xmlns:converters="using:SIC.Converters"
+             xmlns:material="using:Material.Styles.Themes"
+             x:Class="SIC.App"
+             xmlns:local="using:SIC"
+             RequestedThemeVariant="Dark">
+             <!-- "Default" ThemeVariant follows system theme variant. "Dark" or "Light" are other available options. -->
+
+    <Application.DataTemplates>
+        <local:ViewLocator />
+    </Application.DataTemplates>
+    
+    <Application.Resources>
+                <ResourceDictionary>
+                    <converters:ImageFormatConverter 
+                        x:Key="ImageFormatConverter"/>
+
+
+                    <!-- Основные цвета -->
+                    <Color x:Key="BackgroundColor">#202020</Color>
+                    <Color x:Key="CardColor">#2D2D2D</Color>
+
+
+                    <!-- Текст -->
+                    <SolidColorBrush x:Key="TextColor"
+                                    Color="#E6E6E6"/>
+
+                    <SolidColorBrush x:Key="SecondaryTextColor"
+                                    Color="#888888"/>
+
+
+                    <!-- Акцент -->
+                    <SolidColorBrush x:Key="AccentColor"
+                                    Color="White"/>
+
+
+                    <!-- Логи -->
+                    <SolidColorBrush x:Key="LogBackground"
+                                    Color="#1E1E1E"/>
+
+
+                    <!-- Ошибки -->
+                    <SolidColorBrush x:Key="ErrorColor"
+                                    Color="#F44747"/>
+
+                    <SolidColorBrush x:Key="WarningColor"
+                                    Color="#DCDCAA"/>
+
+                </ResourceDictionary>
+
+    </Application.Resources>
+
+    <Application.Styles>
+        <material:MaterialTheme BaseTheme="Dark" PrimaryColor="Grey" SecondaryColor="Red" />
+        <materialIcons:MaterialIconStyles />
+            
+        <StyleInclude Source="avares://Avalonia.Controls.ColorPicker/Themes/Simple/Simple.xaml" />
+
+        <Style Selector="Border">
+            <Setter Property="CornerRadius" Value="10"/>
+        </Style>
+
+
+        <!-- Общий стиль кнопок -->
+        <Style Selector="Button">
+            <Setter Property="Height" Value="32"/>
+            <Setter Property="Padding" Value="12,5"/>
+            <Setter Property="CornerRadius" Value="8"/>
+            <Setter Property="FontSize" Value="13"/>
+            <Setter Property="HorizontalContentAlignment" Value="Center"/>
+            <Setter Property="VerticalContentAlignment" Value="Center"/>
+        </Style>
+
+
+        <!-- Кнопка действия -->
+        <Style Selector="Button.primary">
+            <Setter Property="Background" Value="#4CAF50"/>
+            <Setter Property="Foreground" Value="White"/>
+        </Style>
+
+
+        <!-- Красная кнопка -->
+        <Style Selector="Button.danger">
+            <Setter Property="Background" Value="#E53935"/>
+            <Setter Property="Foreground" Value="White"/>
+        </Style>
+
+
+        <!-- Общие поля ввода -->
+        <Style Selector="TextBox">
+            <Setter Property="Height" Value="32"/>
+            <Setter Property="CornerRadius" Value="8"/>
+        </Style>
+
+
+        <!-- ComboBox -->
+        <Style Selector="ComboBox">
+            <Setter Property="Height" Value="32"/>
+            <Setter Property="CornerRadius" Value="8"/>
+        </Style>
+
+
+        <!-- Slider -->
+        <Style Selector="Slider">
+            <Setter Property="Height" Value="40"/>
+            <Setter Property="Foreground" Value="White"/>
+        </Style>
+
+
+        <!-- CheckBox -->
+        <Style Selector="CheckBox">
+            <Setter Property="FontSize" Value="13"/>
+        </Style>
+
+
+        <!-- Панели -->
+        <Style Selector="Border.card">
+            <Setter Property="BorderBrush" Value="#555555"/>
+            <Setter Property="BorderThickness" Value="1"/>
+            <Setter Property="CornerRadius" Value="12"/>
+            <Setter Property="Padding" Value="12"/>
+            <Setter Property="Background" Value="#353535"/>
+        </Style>
+
+
+        <!-- Цветовая схема -->
+        <Style Selector="TextBlock.title">
+            <Setter Property="Foreground" Value="#FFFFFF"/>
+            <Setter Property="FontWeight" Value="Bold"/>
+            <Setter Property="FontSize" Value="14"/>
+        </Style>
+
+
+        <Style Selector="TextBlock.caption">
+            <Setter Property="Foreground" Value="#AAAAAA"/>
+            <Setter Property="FontSize" Value="12"/>
+        </Style>
+
+    </Application.Styles>
+</Application>
