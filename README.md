@@ -27,8 +27,6 @@ A lightweight, cross-platform desktop app for converting images between formats,
 Grab the latest build from the [Releases](../../releases) page.
 
 - `SIC-win-x64.exe` — Windows (self-contained, no .NET install required)
-- `SIC-linux-x64` — Linux (self-contained, no .NET install required)
-
 ## Usage
 
 1. Select a source file or folder (via the buttons or drag & drop)
