@@ -1,0 +1,65 @@
+name: Build
+
+on:
+  push:
+    tags:
+      - 'v*'
+  workflow_dispatch: # для ручного запуска
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        include:
+          - rid: win-x64
+            ext: zip
+          - rid: linux-x64
+            ext: tar.gz
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '10.0.x'
+
+      - name: Publish ${{ matrix.rid }}
+        run: >
+          dotnet publish SIC.csproj
+          -c Release
+          -r ${{ matrix.rid }}
+          --self-contained true
+          -p:PublishSingleFile=true
+          -p:IncludeNativeLibrariesForSelfExtract=true
+          -p:DebugType=none
+          -o publish/${{ matrix.rid }}
+
+      - name: Pack (zip)
+        if: matrix.ext == 'zip'
+        run: |
+          sudo apt-get update && sudo apt-get install -y zip
+          cd publish/${{ matrix.rid }}
+          zip -r ../../SIC-${{ matrix.rid }}.zip .
+
+      - name: Pack (tar.gz)
+        if: matrix.ext == 'tar.gz'
+        run: |
+          # Заменяем SIC на имя вашего исполняемого файла, если оно отличается
+          [ -f "publish/${{ matrix.rid }}/SIC" ] && chmod +x publish/${{ matrix.rid }}/SIC
+          tar -czf SIC-${{ matrix.rid }}.tar.gz -C publish/${{ matrix.rid }} .
+
+      # Шаг 1: Сохраняем как артефакты сборки (доступны внутри GitHub Actions 90 дней)
+      - uses: actions/upload-artifact@v4
+        with:
+          name: SIC-${{ matrix.rid }}
+          path: SIC-${{ matrix.rid }}.${{ matrix.ext }}
+
+      # Шаг 2: Если это пуш тега (например, v1.0.0), автоматически создаем релиз и заливаем файлы туда
+      - name: Release
+        if: startsWith(github.ref, 'refs/tags/')
+        uses: softprops/action-gh-release@v2
+        with:
+          files: SIC-${{ matrix.rid }}.${{ matrix.ext }}
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

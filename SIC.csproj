@@ -31,6 +31,7 @@
     <PackageReference Include="Microsoft.Extensions.Logging.Debug" Version="10.0.12" />
     <None Include=".github\LICENSE" />
     <None Include=".github\README.md" />
+	<none Include=".github\workflows\build-action.yml"/>
   </ItemGroup>
   
   <Target Name="RemoveNativePdb" AfterTargets="Build;Publish">
