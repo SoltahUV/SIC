@@ -1,0 +1,267 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:materialIcons="using:Material.Icons.Avalonia"
+        xmlns:vm="using:SIC.ViewModels"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        mc:Ignorable="d"
+        d:DesignWidth="850"
+        d:DesignHeight="700"
+        x:Class="SIC.Views.MainWindow"
+        x:DataType="vm:MainViewModel"
+        Icon="/Assets/alt.app.ico"
+        Title="Simple Image Converter"
+        Width="850"
+        Height="700"
+        CanResize="False"
+        Background="#202020"
+        WindowStartupLocation="CenterScreen">
+    <Grid RowDefinitions="*,220">
+        <!-- ОСНОВНАЯ ЧАСТЬ -->
+        <ScrollViewer Grid.Row="0"
+                      Margin="15">
+            <Grid ColumnDefinitions="*,*"
+                  ColumnSpacing="10">
+                <!-- ЛЕВАЯ КОЛОНКА -->
+                <StackPanel Grid.Column="0"
+                            Spacing="15">
+                    <!-- Источник -->
+                    <Border DragDrop.AllowDrop="True" Classes="card">
+                        <StackPanel Spacing="8">
+                            <StackPanel Orientation="Horizontal" Spacing="6" VerticalAlignment="Center">
+                                <materialIcons:MaterialIcon Kind="FileImagePlus" Width="18" Height="18" Foreground="White"/>
+                                <TextBlock Text="Input" Classes="title"/>
+                            </StackPanel>
+                            <TextBox Text="{Binding SourcePath}"
+                                     IsReadOnly="True"
+                                     IsTabStop="False"
+                                     Focusable="False"
+                                     PlaceholderText="Path..."/>
+                            <Grid ColumnDefinitions="*,Auto">
+                                <Button Grid.Column="0"
+                                        Content="Select file"
+                                        Command="{Binding SelectSourceFileCommand}"
+                                        CommandParameter="{Binding $parent[Window]}"
+                                        Margin="0,0,5,0"/>
+                                <Button Grid.Column="1"
+                                        Content="Select directory"
+                                        Command="{Binding SelectSourceFolderCommand}"
+                                        CommandParameter="{Binding $parent[Window]}"
+                                        Margin="5,0,0,0"/>
+                            </Grid>
+                        </StackPanel>
+                    </Border>
+                    <!-- Назначение -->
+                    <Border Classes="card">
+                        <StackPanel Spacing="8">
+                            <StackPanel Orientation="Horizontal" Spacing="6" VerticalAlignment="Center">
+                                <materialIcons:MaterialIcon Kind="FolderMultipleImage" Width="18" Height="18" Foreground="White"/>
+                                <TextBlock Text="Output " Classes="title"/>
+                            </StackPanel>
+                            <Grid ColumnDefinitions="*,Auto"
+                                  ColumnSpacing="10">
+                                <TextBox Grid.Column="0"
+                                         Text="{Binding TargetPath}"
+                                         IsReadOnly="True"
+                                         IsTabStop="False"
+                                         Focusable="False"
+                                         PlaceholderText="Path..."/>
+                                <Button Grid.Column="1"
+                                        Content="Select"
+                                        Command="{Binding SelectTargetFolderCommand}"
+                                        CommandParameter="{Binding $parent[Window]}"/>
+                            </Grid>
+
+                            <!-- Имя файла (редактируется только для одиночного файла) -->
+                            <StackPanel Spacing="4"
+                                        IsVisible="{Binding !IsFolder}">
+                                <TextBlock Text="Output name"
+                                           Classes="caption"/>
+                                <TextBox x:Name="OutputFileNameTextBox"
+                                         Text="{Binding OutputFileName, Mode=TwoWay}"
+                                         PlaceholderText="File name (without extension)..."/>
+                            </StackPanel>
+                        </StackPanel>
+                    </Border>
+                    <!-- Итоговый путь -->
+                    <Border Classes="card">
+                        <StackPanel Spacing="8">
+                            <StackPanel Orientation="Horizontal" Spacing="6" VerticalAlignment="Center">
+                                <materialIcons:MaterialIcon Kind="FileFind" Width="18" Height="18" Foreground="White"/>
+                                <TextBlock Text="Result" Classes="title"/>
+                            </StackPanel>
+                            <ScrollViewer MaxHeight="40"
+                                          VerticalScrollBarVisibility="Auto">
+                                <TextBlock Text="{Binding ResultPath}"
+                                    Classes="caption"
+                                    TextWrapping="Wrap"
+                                    />
+                            </ScrollViewer>
+                        </StackPanel>
+                    </Border>
+                    
+                    <!-- КНОПКИ -->
+                    <StackPanel Spacing="10"
+                                VerticalAlignment="Bottom">
+                        <Button Content="Convert"
+                                Classes="primary"
+                                Command="{Binding StartConversionCommand}"/>
+                        <Button Content="Cancel"
+                                Classes="danger"
+                                Command="{Binding CancelCommand}"
+                                IsVisible="{Binding IsBusy}"/>
+                    </StackPanel>
+                </StackPanel>
+                <!-- ПРАВАЯ КОЛОНКА -->
+                <StackPanel Grid.Column="1"
+                            Spacing="15">
+                    <Border Classes="card">
+                        <StackPanel Spacing="10">
+                            <StackPanel Orientation="Horizontal" Spacing="6" VerticalAlignment="Center">
+                                <materialIcons:MaterialIcon Kind="Cog" Width="18" Height="18" Foreground="White"/>
+                                <TextBlock Text="Conversion options " Classes="title"/>
+                            </StackPanel>
+                            <TextBlock Text="Output format:"
+                                       Classes="caption"/>
+                            <ComboBox ItemsSource="{Binding AvailableFormats}"
+                                    SelectedItem="{Binding SelectedTargetFormat}">
+                                
+                                <ComboBox.ItemTemplate>
+                                    <DataTemplate>
+                                        <TextBlock Text="{Binding Converter={StaticResource ImageFormatConverter}}"/>
+                                    </DataTemplate>
+                                </ComboBox.ItemTemplate>
+
+                            </ComboBox>
+
+                            <!-- Цвет -->
+                            <StackPanel IsVisible="{Binding IsBackgroundSupported}"
+                                        Spacing="10">
+                                <TextBlock Text="Background color"
+                                           Classes="caption"/>
+                                <ColorPicker
+                                    Classes="Border"
+                                    HorizontalAlignment="Left"
+                                    Margin="5,0,0,0"
+                                    Width="150"
+                                    Color="{Binding BackgroundColor,Mode=TwoWay}"
+                                    IsAlphaVisible="False"
+                                    IsColorPaletteVisible="False"/>
+                            </StackPanel>
+
+                            <!-- Качество -->
+                            <StackPanel IsVisible="{Binding IsQualitySupported}"
+                                        Spacing="1">
+                                <TextBlock Text="Quality / Compression level (Higher = better quality)"
+                                           Classes="caption"/>
+                                <Slider 
+                                        Width="350"
+                                        Minimum="1"
+                                        Maximum="100"
+                                        Value="{Binding Quality,Mode=TwoWay}"/>
+                                <TextBlock Text="{Binding Quality}"
+                                           HorizontalAlignment="Left"/>
+                            </StackPanel>
+                            <!-- Разрешение -->
+
+                            <StackPanel Spacing="1">
+
+                                <TextBlock Text="Resolution (Higher = better size)"
+                                           Classes="caption"/>
+
+                                <Slider
+                                    Width="350"
+                                    Minimum="{Binding MinResizePercent}"
+                                    Maximum="{Binding MaxResizePercent}"
+                                    Value="{Binding ResizePercent, Mode=TwoWay}"
+                                    TickFrequency="2"
+                                    IsSnapToTickEnabled="True"/>
+
+
+                                <Grid ColumnDefinitions="*,*">
+
+                                    <TextBlock Grid.Column="0"
+                                               Text="{Binding ResizePercent, StringFormat='{}{0}%'}"/>
+
+
+                                    <TextBlock Grid.Column="1" IsVisible="{Binding IsResolutionPreviewEnabled}"
+                                               HorizontalAlignment="Right"
+                                               Text="{Binding ImageWidth, StringFormat='{}{0}px'}"/>
+
+                                </Grid>
+
+
+                                <TextBlock HorizontalAlignment="Right" IsVisible="{Binding IsResolutionPreviewEnabled}"
+                                           Text="{Binding ImageHeight, StringFormat='Height: {0}px'}"
+                                           Classes="caption"/>
+
+
+                            </StackPanel>
+                            <CheckBox Content="Save Metadata"
+                                      IsChecked="{Binding SaveMetadata}"/>
+                        </StackPanel>
+
+                    </Border>
+                </StackPanel>
+            </Grid>
+        </ScrollViewer>
+
+
+        <!-- ЛОГИ -->
+        <Border Grid.Row="1"
+                Margin="5"
+                Classes="card"
+                Background="{DynamicResource LogBackground}">
+            <Grid RowDefinitions="Auto,*">
+                <!-- Верхняя панель -->
+                <Border Padding="5">
+                    <Grid ColumnDefinitions="Auto,*">
+                        <StackPanel Orientation="Horizontal"
+                                    Spacing="10">
+                            <StackPanel Orientation="Horizontal" Spacing="6" VerticalAlignment="Center" Margin="0,0,50,0">
+                                <materialIcons:MaterialIcon Kind="TextLong" Width="18" Height="18" Foreground="White"/>
+                                <TextBlock Text="Logs" Classes="title"/>
+                            </StackPanel>
+                            <TextBlock Text="Viewer level:"
+                                       VerticalAlignment="Center"
+                                       Margin="0,3,0,0"
+                                       Classes="caption"/>
+                            <ComboBox Width="100"
+                                     
+                                      ItemsSource="{Binding Logs.AvailableLogLevels}"
+                                      SelectedItem="{Binding Logs.SelectedLogLevel,Mode=TwoWay}"/>
+                        </StackPanel>
+                        <Button Grid.Column="1"
+                                HorizontalAlignment="Right"
+                                Content="Clear"
+                                Command="{Binding Logs.ClearCommand}"/>
+                    </Grid>
+                </Border>
+                <!-- Список логов -->
+                <ListBox Grid.Row="1"
+                         ItemsSource="{Binding Logs.FilteredLogs}"
+                         Background="Transparent"
+                         FontFamily="Consolas"
+                         FontSize="12">
+                    <ListBox.ItemTemplate>
+                        <DataTemplate>
+                            <Grid ColumnDefinitions="80,70,*">
+                                <TextBlock Grid.Column="0"
+                                           Text="{Binding Timestamp,StringFormat='{}{0:HH:mm:ss}'}"
+                                           Foreground="{DynamicResource SecondaryTextColor}"/>
+                                <TextBlock Grid.Column="1"
+                                           Text="{Binding LogLevel}"
+                                           Foreground="{DynamicResource AccentColor}"
+                                           FontWeight="Bold"/>
+                                <TextBlock Grid.Column="2"
+                                           Text="{Binding Message}"
+                                           Foreground="{DynamicResource TextColor}"
+                                           TextWrapping="Wrap"/>
+                            </Grid>
+                        </DataTemplate>
+                    </ListBox.ItemTemplate>
+                </ListBox>
+            </Grid>
+        </Border>
+    </Grid>
+</Window>
